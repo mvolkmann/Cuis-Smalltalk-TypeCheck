@@ -1,4 +1,4 @@
-'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 9:09:30 am'!
+'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 5:57:56 pm'!
 'Description '!
 !provides: 'TypeCheck' 1 4!
 SystemOrganization addCategory: #TypeCheck!
@@ -38,7 +38,7 @@ argNamesinReceiver: anObject selector: selectorSymbol
 	argNodes := method arguments.
 	^ argNodes collect: [:node | node name].! !
 
-!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/24/2024 18:44:29'!
+!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/25/2024 17:51:38'!
 check
 	"Raise error if any argument has the wrong type."
 	| argNames argValues keywords receiver selector sender |
@@ -49,6 +49,7 @@ check
 	receiver := thisContext sender receiver.
 	selector := sender selector.
 	keywords := selector keywords.
+	keywords inspect.
 	argNames := self argNamesinReceiver: receiver selector: selector.
 	argValues := sender arguments.
 		
@@ -126,4 +127,19 @@ validateSeq
 
 	self isCollection and: [self isSequenceable] ::
 		ifFalse: [Error signal: 'requires SequenceableCollection like Array'].! !
+
+!Behavior methodsFor: '*TypeCheck' stamp: 'RMV 11/23/2024 21:21:57'!
+lookupClassImplementingSelector: selectorSymbol
+	"Look up the given selector in my methodDictionary.
+	Return the class that implements it if found.
+	Otherwise chase the superclass chain and try again.
+	Return nil if no implementing class is found."
+	| class |
+
+	class := self.
+	[class == nil] whileFalse: [
+		class includesSelector: selectorSymbol :: ifTrue: [^ class].
+		class := class superclass
+	].
+	^ nil! !
 TypeCheck initialize!
