@@ -2,7 +2,7 @@
 
 ## Overview
 
-A hallmark of Smalltalk is that any object can be
+A hallmark feature of Smalltalk is that any object can be
 passed as an argument to any method and it's only wrong if
 the object does not support every message that is sent to it.
 When this is not the case, a "MessageNotUnderstood" error is raised.
