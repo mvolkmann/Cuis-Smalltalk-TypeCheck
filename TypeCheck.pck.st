@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6817] on 24 November 2024 at 7:12:36 pm'!
+'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 8:35:29 am'!
 'Description '!
-!provides: 'TypeCheck' 1 1!
+!provides: 'TypeCheck' 1 2!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -93,4 +93,34 @@ classFromName: nameSymbol
 	].
 		
 	^class.! !
+
+!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/25/2024 08:35:00'!
+logAs: aString
+
+	| sender |
+	sender := thisContext sender.
+	('In {1}, {2} is a {3} = {4}' format: {sender. aString. self class name. self}) print! !
+
+!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/21/2024 18:31:44'!
+validateAssoc
+	"Raise error if self is not an Association object."
+
+	self isKindOf: Association ::
+		ifFalse: [Error signal: 'requires Association object'].! !
+
+!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/22/2024 18:53:57'!
+validateAssocSeq
+	"Raise error if self is not a SequenceableCollection of Association objects."
+
+	self validateSeq.
+
+	self allSatisfy: [:element | element isKindOf: Association] ::
+		ifFalse: [Error signal: 'requires SequenceableCollection of Association objects'].! !
+
+!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/22/2024 18:54:27'!
+validateSeq
+	"Raise error if anObject is not a SequenceableCollection."
+
+	self isCollection and: [self isSequenceable] ::
+		ifFalse: [Error signal: 'requires SequenceableCollection like Array'].! !
 TypeCheck initialize!
