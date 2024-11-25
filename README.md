@@ -6,13 +6,18 @@ This is a package for Cuis Smalltalk that provides
 run-time type checking of arguments in keyword methods.
 
 It relies on including a class name at the end of argument names.
-The first letter in the class name must be uppercase
+In order for an argument to be type checked,
+the first letter in the class name must be uppercase
 and it must be the first uppercase letter in the argument name.
 For example, consider the following method signature in the `Dog` class.
 
 ```smalltalk
 purchaseBreed: breedString color: colorSymbol age: ageNumber
 ```
+
+Arguments whose names do not end in a known class
+(or one of the supported abbreviations described later)
+will not be type checked.
 
 To perform type checking each time a method is executed,
 add `TypeCheck check.` near the beginning of the method code.
