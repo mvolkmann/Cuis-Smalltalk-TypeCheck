@@ -2,10 +2,23 @@
 
 ## Overview
 
-This is a package for Cuis Smalltalk that provides
-run-time type checking of arguments in keyword methods.
+A hallmark of Smalltalk is that any object can be
+passed as an argument to any method and it's only wrong if
+the object does not support every message that is sent to it.
+When this is not the case, a "MessageNotUnderstood" error is raised.
+While this is beautiful in theory, in practice it would nice if
+a more explicit error was raised, perhaps one like the following:
 
-It relies on including a class name at the end of argument names.
+```text
+age: ageNumber must be a kind of Number but was String"
+```
+
+This is a Cuis Smalltalk package that provides
+run-time type checking of arguments in keyword methods.
+When arguments with unexpected types are passed,
+errors like the one above are raised.
+
+This relies on including a class name at the end of argument names.
 In order for an argument to be type checked,
 the first letter in the class name must be uppercase
 and it must be the first uppercase letter in the argument name.
@@ -26,10 +39,6 @@ This will verify that:
 - the type of `breedString` values is `String` or any subclass
 - the type of `colorSymbol` values is `Symbol` or any subclass
 - the type of `ageNumber` values is `Number` or any subclass
-
-If any of these type checks are violated,
-an error will be raised with a message like
-"age: ageNumber must be a kind of Number but was String".
 
 ## Enabling and Disabling
 

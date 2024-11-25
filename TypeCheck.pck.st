@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 8:35:29 am'!
+'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 8:39:11 am'!
 'Description '!
-!provides: 'TypeCheck' 1 2!
+!provides: 'TypeCheck' 1 3!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -94,12 +94,14 @@ classFromName: nameSymbol
 		
 	^class.! !
 
-!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/25/2024 08:35:00'!
+!Object methodsFor: '*TypeCheck' stamp: 'RMV 11/25/2024 08:38:26'!
 logAs: aString
 
-	| sender |
+	| message sender template |
 	sender := thisContext sender.
-	('In {1}, {2} is a {3} = {4}' format: {sender. aString. self class name. self}) print! !
+	template := 'In {1}, {2} is a {3} = {4}'.
+	message := template format: {sender. aString. self class name. self}.
+	message print.! !
 
 !Object methodsFor: '*TypeCheck' stamp: 'RMV 11/21/2024 18:31:44'!
 validateAssoc
