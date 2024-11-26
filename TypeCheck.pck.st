@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 6:30:30 pm'!
+'From Cuis7.1 [latest update: #6817] on 26 November 2024 at 6:04:30 am'!
 'Description '!
-!provides: 'TypeCheck' 1 5!
+!provides: 'TypeCheck' 1 6!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -26,6 +26,34 @@ enable
 !TypeCheck class methodsFor: 'class initialization' stamp: 'RMV 11/24/2024 18:22:38'!
 initialize
 	Enabled := false.! !
+
+!TypeCheck class methodsFor: 'class initialization' stamp: 'RMV 11/26/2024 06:04:12'!
+parseDemo
+	| block code methodNode parser |
+	
+	code := '
+	sumOf: firstNumber and: secondNumber
+		"Answer the sum of two numbers."
+		| sum |
+
+		"This demonstrates using backticks for a compile-time expression."
+		sum := `2 + 3`.
+
+		sum := firstNumber + secondNumber.
+		^ sum.
+	'.
+	parser := Parser new.
+	methodNode := parser parse: code class: TypeCheck.
+	block := methodNode block.
+	Transcript clear.
+	"TODO: Recursively print the statements in each statement with increasing indentation."
+	block statements do: [:statement |
+		Transcript newLine.
+		statement class name print.
+		statement printSourceCode print.
+	].
+	
+! !
 
 !TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/25/2024 18:25:34'!
 argNamesinReceiver: anObject selector: selectorSymbol
