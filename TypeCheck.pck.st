@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 5:57:56 pm'!
+'From Cuis7.1 [latest update: #6817] on 25 November 2024 at 6:30:30 pm'!
 'Description '!
-!provides: 'TypeCheck' 1 4!
+!provides: 'TypeCheck' 1 5!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -27,18 +27,18 @@ enable
 initialize
 	Enabled := false.! !
 
-!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/24/2024 18:41:31'!
+!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/25/2024 18:25:34'!
 argNamesinReceiver: anObject selector: selectorSymbol
 	"Answer an OrderedCollection of the argument names in a given method."
-	| argNodes code implementor method |
+	| argNodes code implementor methodNode |
 	
 	implementor := anObject class lookupClassImplementingSelector: selectorSymbol.
 	code := implementor sourceCodeAt: selectorSymbol.
-	method := Parser new parse: code class: implementor.
-	argNodes := method arguments.
+	methodNode := Parser new parse: code class: implementor.
+	argNodes := methodNode arguments.
 	^ argNodes collect: [:node | node name].! !
 
-!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/25/2024 17:51:38'!
+!TypeCheck class methodsFor: 'utility' stamp: 'RMV 11/25/2024 18:25:53'!
 check
 	"Raise error if any argument has the wrong type."
 	| argNames argValues keywords receiver selector sender |
@@ -49,7 +49,6 @@ check
 	receiver := thisContext sender receiver.
 	selector := sender selector.
 	keywords := selector keywords.
-	keywords inspect.
 	argNames := self argNamesinReceiver: receiver selector: selector.
 	argValues := sender arguments.
 		
