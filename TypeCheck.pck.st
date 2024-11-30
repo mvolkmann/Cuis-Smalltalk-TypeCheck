@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 4:18:13 pm'!
+'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 4:23:15 pm'!
 'Description '!
-!provides: 'TypeCheck' 1 28!
+!provides: 'TypeCheck' 1 29!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -346,7 +346,7 @@ printOn: aStream depth: aNumber
 		nextPutAll: self name;
 		newLine.! !
 
-!MessageNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:16:35'!
+!MessageNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:23:02'!
 printOn: aStream depth: aNumber
 	| indent indentNext |
 
@@ -356,15 +356,18 @@ printOn: aStream depth: aNumber
 	
 	aStream nextPutAll: indent; nextPutAll: 'message:'; newLine.
 	
+	aStream nextPutAll: indentNext; nextPutAll: 'receiver:'.
 	receiver isMessageNode
 		ifTrue: [
+			aStream newLine.
 			receiver printOn: aStream depth: aNumber + 2
 		]
 		ifFalse: [
-			aStream nextPutAll: indentNext; nextPutAll: 'receiver: '; nextPutAll: receiver name; newLine.
-			aStream nextPutAll: indentNext; nextPutAll: 'selector: #'; nextPutAll: selector key; newLine.
-			aStream nextPutAll: indentNext; nextPutAll: 'arguments:'; newLine.
+			aStream space; nextPutAll: receiver name; newLine.
 		].
+
+	aStream nextPutAll: indentNext; nextPutAll: 'selector: #'; nextPutAll: selector key; newLine.
+	aStream nextPutAll: indentNext; nextPutAll: 'arguments:'; newLine.
 	
 	self arguments do: [:argument |
 		argument printOn: aStream depth: aNumber + 2.
