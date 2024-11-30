@@ -1,13 +1,13 @@
-'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 4:23:15 pm'!
+'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 4:37:44 pm'!
 'Description '!
-!provides: 'TypeCheck' 1 29!
+!provides: 'TypeCheck' 1 30!
 SystemOrganization addCategory: #TypeCheck!
 
 
 !classDefinition: #ParseTree category: #TypeCheck!
 Object subclass: #ParseTree
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: 'IndentDict'
 	poolDictionaries: ''
 	category: 'TypeCheck'!
 !classDefinition: 'ParseTree class' category: #TypeCheck!
@@ -25,9 +25,16 @@ TypeCheck class
 	instanceVariableNames: ''!
 
 
-!ParseTree class methodsFor: 'as yet unclassified' stamp: 'RMV 11/30/2024 09:24:49'!
+!ParseTree class methodsFor: 'as yet unclassified' stamp: 'RMV 11/30/2024 16:37:16'!
 indentDepth: aNumber
-	^ String new: aNumber * 4 withAll: Character space! !
+	^ IndentDict at: aNumber ifAbsentPut: [
+		String new: aNumber * 4 withAll: Character space.
+	]
+! !
+
+!ParseTree class methodsFor: 'as yet unclassified' stamp: 'RMV 11/30/2024 16:26:52'!
+initialize
+	IndentDict := Dictionary new.! !
 
 !ParseTree class methodsFor: 'as yet unclassified' stamp: 'RMV 11/30/2024 09:14:37'!
 printCode: aString
@@ -51,7 +58,7 @@ disable
 enable
 	Enabled := true.! !
 
-!TypeCheck class methodsFor: 'class initialization' stamp: 'RMV 11/24/2024 18:22:38'!
+!TypeCheck class methodsFor: 'class initialization' stamp: 'RMV 11/30/2024 16:26:27'!
 initialize
 	Enabled := false.! !
 
@@ -396,4 +403,5 @@ lookupClassImplementingSelector: selectorSymbol
 		class := class superclass
 	].
 	^ nil! !
+ParseTree initialize!
 TypeCheck initialize!
