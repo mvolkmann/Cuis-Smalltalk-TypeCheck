@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 4:37:44 pm'!
+'From Cuis7.1 [latest update: #6876] on 30 November 2024 at 7:13:21 pm'!
 'Description '!
-!provides: 'TypeCheck' 1 30!
+!provides: 'TypeCheck' 1 34!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -252,7 +252,7 @@ printOn: aStream depth: aNumber
 		nextPutAll: self class name;
 		newLine.! !
 
-!AssignmentNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 15:46:11'!
+!AssignmentNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 18:32:58'!
 printOn: aStream depth: aNumber
 	| indent indentNext |
 
@@ -262,8 +262,7 @@ printOn: aStream depth: aNumber
 	aStream nextPutAll: indent; nextPutAll: 'assignment:'; newLine.
 	aStream nextPutAll: indentNext; nextPutAll: 'variable: '; nextPutAll: variable name; newLine.
 	aStream nextPutAll: indentNext; nextPutAll: 'value:'; newLine.
-	value printOn: aStream depth: aNumber + 2.
-	aStream newLine.! !
+	value printOn: aStream depth: aNumber + 2.! !
 
 !BacktickNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:12:07'!
 printOn: aStream depth: aNumber
@@ -273,6 +272,21 @@ printOn: aStream depth: aNumber
 		nextPutAll: sourceCode;
 		nextPut: $`;
 		newLine.! !
+
+!BraceNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 18:40:30'!
+printOn: aStream depth: aNumber
+	| indent |
+
+	indent := ParseTree indentDepth: aNumber.
+	aStream
+		nextPutAll: indent;
+		nextPutAll: 'dynamic array: ';
+		newLine.
+	elements ifNotEmpty: [
+		elements do: [:element |
+			element printOn: aStream depth: aNumber + 1.
+		].
+	].! !
 
 !BlockNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 15:58:17'!
 printOn: aStream depth: aNumber
@@ -297,7 +311,7 @@ printOn: aStream depth: aNumber
 	statements do: [:statement | statement printOn: aStream depth: aNumber + 1].
 ! !
 
-!MethodNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 15:51:44'!
+!MethodNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 18:24:23'!
 printOn: aStream depth: aNumber
 	| indent indentNext |
 
@@ -308,13 +322,15 @@ printOn: aStream depth: aNumber
 	self printSelectorAndArgumentsOn: aStream.
 	aStream newLine.
 	
-	self comment do: [:commentLine |
-		aStream
-			nextPutAll: indentNext;
-			nextPutAll: 'comment: "';
-			nextPutAll: commentLine;
-			nextPut: $";
-			newLine.
+	comment ifNotNil: [
+		comment do: [:commentLine |
+			aStream
+				nextPutAll: indentNext;
+				nextPutAll: 'comment: "';
+				nextPutAll: commentLine;
+				nextPut: $";
+				newLine.
+		].
 	].
 
 	self temporaries ifNotEmpty: [
@@ -330,16 +346,25 @@ printOn: aStream depth: aNumber
 	].
 ! !
 
-!LeafNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:05:52'!
+!LeafNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 18:43:27'!
 printOn: aStream depth: aNumber
-	| indent |
+	| indent text |
 
 	indent := ParseTree indentDepth: aNumber.
+	text := key isString ifTrue: ['''', key, ''''] ifFalse: [key asString].
 	
 	aStream
 		nextPutAll: indent;
-		nextPutAll: 'leaf node: ';
-		nextPutAll: key asString;
+		nextPutAll: 'leaf: ';
+		nextPutAll: text;
+		newLine.! !
+
+!VariableNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 18:43:17'!
+printOn: aStream depth: aNumber
+	aStream
+		nextPutAll: (ParseTree indentDepth: aNumber);
+		nextPutAll: 'variable: ';
+		nextPutAll: name;
 		newLine.! !
 
 !TempVariableNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:17:24'!
@@ -353,15 +378,16 @@ printOn: aStream depth: aNumber
 		nextPutAll: self name;
 		newLine.! !
 
-!MessageNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:23:02'!
+!MessageNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 19:12:53'!
 printOn: aStream depth: aNumber
-	| indent indentNext |
+	| indent indentNext type |
 
 	indent := ParseTree indentDepth: aNumber.
 	indentNext := ParseTree indentDepth: aNumber + 1.
 	receiver class name logAs: 'receiver class name'.
 	
-	aStream nextPutAll: indent; nextPutAll: 'message:'; newLine.
+	type := precedence caseOf: { [1] -> ['unary']. [2] -> ['binary']. [3] -> ['keyword'] }.
+	aStream nextPutAll: indent; nextPutAll: type, ' message:'; newLine.
 	
 	aStream nextPutAll: indentNext; nextPutAll: 'receiver:'.
 	receiver isMessageNode
@@ -374,18 +400,20 @@ printOn: aStream depth: aNumber
 		].
 
 	aStream nextPutAll: indentNext; nextPutAll: 'selector: #'; nextPutAll: selector key; newLine.
-	aStream nextPutAll: indentNext; nextPutAll: 'arguments:'; newLine.
 	
-	self arguments do: [:argument |
-		argument printOn: aStream depth: aNumber + 2.
+	arguments ifNotEmpty: [
+		aStream nextPutAll: indentNext; nextPutAll: 'arguments:'; newLine.
+		arguments do: [:argument |
+			argument printOn: aStream depth: aNumber + 2.
+		]
 	].! !
 
-!ReturnNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 16:17:48'!
+!ReturnNode methodsFor: '*TypeCheck' stamp: 'RMV 11/30/2024 19:08:43'!
 printOn: aStream depth: aNumber
-	| indent |
-
-	indent := ParseTree indentDepth: aNumber.
-	aStream nextPutAll: indent; nextPutAll: 'return:'; newLine.
+	aStream
+		nextPutAll: (ParseTree indentDepth: aNumber);
+		nextPutAll: 'return:';
+		newLine.
 	expr printOn: aStream depth: aNumber + 1.
 ! !
 
