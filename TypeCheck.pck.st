@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6876] on 5 December 2024 at 3:25:22 pm'!
+'From Cuis7.1 [latest update: #6876] on 5 December 2024 at 7:01:06 pm'!
 'Description '!
-!provides: 'TypeCheck' 1 39!
+!provides: 'TypeCheck' 1 40!
 SystemOrganization addCategory: #TypeCheck!
 
 
@@ -185,21 +185,6 @@ logAs: aString
 	template := 'In {1}, {2} is a {3} = {4}'.
 	message := template format: {sender. aString. self class name. self}.
 	message print.! !
-
-!Object methodsFor: '*TypeCheck' stamp: 'RMV 12/5/2024 15:24:49'!
-memoize: aBlock
-	| cache cacheKey sender valueKey |
-	
-	sender := thisContext sender.
-	
-	"Smalltalk is a SystemDictionary which is an IdentityDictionary.
-	That is why cacheKey must be a Symbol."
-	cacheKey := ('cache-', sender name) asSymbol.
-
-	cache := Smalltalk at: cacheKey ifAbsentPut: [ IdentityDictionary new ].
-	valueKey := thisContext name, sender arguments asString :: asSymbol.
-
-	^ cache at: valueKey ifAbsentPut: [ aBlock value ].! !
 
 !Object methodsFor: '*TypeCheck' stamp: 'RMV 11/21/2024 18:31:44'!
 validateAssoc
